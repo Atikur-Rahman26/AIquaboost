@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "521724918730",
+    "project_id": "aiquaboost-b097c",
+    "storage_bucket": "aiquaboost-b097c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521724918730:android:14d3b6799e3621f2272d33",
+        "android_client_info": {
+          "package_name": "com.example.aiquaboost"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOjsd3K3f9RZHO17m1UoXnIHd8PVg-5Vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
