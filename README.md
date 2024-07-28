@@ -1,6 +1,7 @@
 # aiquaboost
 
-A new Flutter project.
+A new Flutter project. 
+To run this project some dependencies should be downloaded. Command for this: flutter pub get
 
 ## Getting Started
 
