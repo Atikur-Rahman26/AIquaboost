@@ -112,26 +112,26 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }) {
     return Row(
       children: <Widget>[
-        Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    print('deleting: ${addressNumber}');
-                  },
-                  icon: Icon(Icons.delete_forever),
-                  color: Colors.red,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.check),
-                  color: Colors.green,
-                ),
-              ],
-            )
-          ],
-        ),
+        // Column(
+        //   children: [
+        //     Row(
+        //       children: [
+        //         IconButton(
+        //           onPressed: () {
+        //             print('deleting: ${addressNumber}');
+        //           },
+        //           icon: Icon(Icons.delete_forever),
+        //           color: Colors.red,
+        //         ),
+        //         IconButton(
+        //           onPressed: () {},
+        //           icon: Icon(Icons.check),
+        //           color: Colors.green,
+        //         ),
+        //       ],
+        //     )
+        //   ],
+        // ),
         sizedBoxH10,
         Expanded(
           child: Column(
@@ -315,26 +315,26 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }) {
     return Row(
       children: <Widget>[
-        Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    print('deleting: ${academicNumber}');
-                  },
-                  icon: Icon(Icons.delete_forever),
-                  color: Colors.red,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.check),
-                  color: Colors.green,
-                ),
-              ],
-            )
-          ],
-        ),
+        // Column(
+        //   children: [
+        //     Row(
+        //       children: [
+        //         IconButton(
+        //           onPressed: () {
+        //             print('deleting: ${academicNumber}');
+        //           },
+        //           icon: Icon(Icons.delete_forever),
+        //           color: Colors.red,
+        //         ),
+        //         IconButton(
+        //           onPressed: () {},
+        //           icon: Icon(Icons.check),
+        //           color: Colors.green,
+        //         ),
+        //       ],
+        //     )
+        //   ],
+        // ),
         sizedBoxH10,
         Expanded(
           child: Column(
@@ -474,26 +474,26 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }) {
     return Row(
       children: <Widget>[
-        Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    print('deleting: ${experienceNumber}');
-                  },
-                  icon: Icon(Icons.delete_forever),
-                  color: Colors.red,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.check),
-                  color: Colors.green,
-                ),
-              ],
-            )
-          ],
-        ),
+        // Column(
+        //   children: [
+        //     Row(
+        //       children: [
+        //         IconButton(
+        //           onPressed: () {
+        //             print('deleting: ${experienceNumber}');
+        //           },
+        //           icon: Icon(Icons.delete_forever),
+        //           color: Colors.red,
+        //         ),
+        //         IconButton(
+        //           onPressed: () {},
+        //           icon: Icon(Icons.check),
+        //           color: Colors.green,
+        //         ),
+        //       ],
+        //     )
+        //   ],
+        // ),
         sizedBoxH10,
         Expanded(
           child: Column(
