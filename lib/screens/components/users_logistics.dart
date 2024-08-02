@@ -1,3 +1,4 @@
+import 'package:aiquaboost/data/user_authentication.dart';
 import 'package:aiquaboost/data/user_data_managing.dart';
 import 'package:aiquaboost/data/user_data_processing.dart';
 import 'package:aiquaboost/domain/user_academic_data.dart';
@@ -9,6 +10,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 String getMessageOfRegistrationFieldsChecking(
     {required Map<String, String> userInputList}) {
   String message = 'Account created successfully.';
+  print("from : \nfull_name: ${userInputList['full_name']!.length}"
+      "\nemail:${userInputList['email']!.length}"
+      "\nphone_number:${userInputList['phone_number']!.length}"
+      "\nrole:${userInputList['role']!.length}"
+      "\npreference:${userInputList['preference']!.length}"
+      "\npassword:${userInputList['password']!.length}"
+      "\nconfirm_password:${userInputList['confirm_password']!.length}");
   if (userInputList['full_name']!.length == 0 ||
       userInputList['email']!.length == 0 ||
       userInputList['phone_number']!.length == 0 ||
@@ -33,6 +41,7 @@ String getMessageOfRegistrationFieldsChecking(
   } else if (!isValidEmail(userInputList['email']!)) {
     message = 'Invalid email';
   }
+  print(message);
   return message;
 }
 
@@ -61,11 +70,9 @@ Future<String> getMessageForLogin({
 
   try {
     // Sign in with email and password
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return 'Login successful';
+    String? correct = await UserAuthenticationAndRegistration()
+        .signInWithEmailAndPassword(email: email, password: password);
+    return correct!;
   } on FirebaseAuthException catch (e) {
     // Handle specific FirebaseAuthException errors
     switch (e.code) {
@@ -94,9 +101,10 @@ Future<bool> setUsersInfo() async {
         await userDataProcessing.getUserExperienceInfo(userID: userID);
     Profile.userAcademicData =
         await userDataProcessing.getUserAcademicInfo(userID: userID);
-
+    print("Updated");
     return true;
   } catch (e) {
+    print(e);
     return false;
   }
 }
@@ -166,52 +174,55 @@ Future<bool> usersDataProcessing({
   required List<Map<String, String>> userAddressLists,
 }) async {
   try {
-    print(userAcademicLists);
-    print(userExperienceLists);
-    print(userAddressLists);
-    for (int i = 0; i < userAcademicLists.length; i++) {
-      UserAcademicData userAcademicData = UserAcademicData(
-        userID: Profile.userInfoData!.userID,
-        academicID: '${i}',
-        institute: userAcademicLists[i]['institute']!,
-        degree_or_exam: userAcademicLists[i]['degree_or_exam']!,
-        grade_or_marks: userAcademicLists[i]['grade_or_marks']!,
-        passing_year: userAcademicLists[i]['passing_year']!,
-      );
-      await UserDataUploading().uploadUserAcademicDetails(userAcademicData);
+    if (userAcademicLists.isNotEmpty) {
+      for (int i = 0; i < userAcademicLists.length; i++) {
+        UserAcademicData userAcademicData = UserAcademicData(
+          userID: Profile.userInfoData!.userID,
+          academicID: '${i}',
+          institute: userAcademicLists[i]['institute']!,
+          degree_or_exam: userAcademicLists[i]['degree_or_exam']!,
+          grade_or_marks: userAcademicLists[i]['grade_or_marks']!,
+          passing_year: userAcademicLists[i]['passing_year']!,
+        );
+        await UserDataUploading().uploadUserAcademicDetails(userAcademicData);
+      }
     }
 
-    for (int i = 0; i < userExperienceLists.length; i++) {
-      UserExperienceData userExperienceData = UserExperienceData(
-        userID: Profile.userInfoData!.userID,
-        experienceID: '${i}',
-        designation: userExperienceLists[i]['designation']!,
-        institute: userExperienceLists[i]['institute']!,
-        location: userExperienceLists[i]['location']!,
-        joining_date: userExperienceLists[i]['joining_date']!,
-        last_date_of_this_office: userExperienceLists[i]
-            ['last_date_of_this_office']!,
-      );
-      await UserDataUploading().uploadUserExeperiences(userExperienceData);
+    if (userExperienceLists.isNotEmpty) {
+      for (int i = 0; i < userExperienceLists.length; i++) {
+        UserExperienceData userExperienceData = UserExperienceData(
+          userID: Profile.userInfoData!.userID,
+          experienceID: '${i}',
+          designation: userExperienceLists[i]['designation']!,
+          institute: userExperienceLists[i]['institute']!,
+          location: userExperienceLists[i]['location']!,
+          joining_date: userExperienceLists[i]['joining_date']!,
+          last_date_of_this_office: userExperienceLists[i]
+              ['last_date_of_this_office']!,
+        );
+        await UserDataUploading().uploadUserExeperiences(userExperienceData);
+      }
     }
 
-    for (int i = 0; i < userAddressLists.length; i++) {
-      UserAddressData userAddressData = UserAddressData(
-        userID: Profile.userInfoData!.userID,
-        addressID: '${i}',
-        house: userAddressLists[i]['house']!,
-        road: userAddressLists[i]['road']!,
-        village_or_town: userAddressLists[i]['village_or_town']!,
-        upzilla_or_thana: userAddressLists[i]['upzilla_or_thana']!,
-        district: userAddressLists[i]['district']!,
-        division: userAddressLists[i]['division']!,
-      );
+    if (userAddressLists.isNotEmpty) {
+      for (int i = 0; i < userAddressLists.length; i++) {
+        UserAddressData userAddressData = UserAddressData(
+          userID: Profile.userInfoData!.userID,
+          addressID: '${i}',
+          house: userAddressLists[i]['house']!,
+          road: userAddressLists[i]['road']!,
+          village_or_town: userAddressLists[i]['village_or_town']!,
+          upzilla_or_thana: userAddressLists[i]['upzilla_or_thana']!,
+          district: userAddressLists[i]['district']!,
+          division: userAddressLists[i]['division']!,
+        );
 
-      await UserDataUploading().uploadUserAddress(userAddressData);
+        await UserDataUploading().uploadUserAddress(userAddressData);
+      }
     }
     return true;
   } catch (e) {
-    print(e);
+    print("error: ${e}");
     return false;
   }
 }

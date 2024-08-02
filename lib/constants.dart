@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Color kPrimaryBlueColor = const Color.fromRGBO(2, 62, 138, 1);
 
@@ -23,3 +24,14 @@ const welcomeTitleBlue = TextStyle(
   color: Color.fromRGBO(2, 62, 138, 1),
   fontWeight: FontWeight.bold,
 );
+
+void showToast({required String message}) {
+  Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      textColor: Colors.white,
+      backgroundColor: kPrimaryBlueColor,
+      fontSize: 16.0);
+}

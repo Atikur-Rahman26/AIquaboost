@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:aiquaboost/constants.dart';
 import 'package:aiquaboost/data/user_authentication.dart';
 import 'package:aiquaboost/screens/components/users_logistics.dart';
 import 'package:aiquaboost/screens/user_login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Registration extends StatefulWidget {
@@ -18,6 +20,7 @@ class Registration extends StatefulWidget {
 class _LoginState extends State<Registration> {
   bool isUploadedImage = false;
   bool _clickedUserPhotoUpload = false;
+  bool _isLoading = false;
   XFile? _userImage;
   var userInputsList = {
     'full_name': '',
@@ -49,21 +52,53 @@ class _LoginState extends State<Registration> {
     required bool passwordField,
   }) {
     return Padding(
-        padding: const EdgeInsets.only(
-          left: 30,
-          right: 30,
-        ),
-        child: TextField(
-          obscureText: passwordField,
-          controller: userPersonalInfoController[fieldName],
-          style: const TextStyle(fontSize: 18, fontFamily: 'Arial'),
-          decoration: InputDecoration(
-              prefixIcon: Icon(iconData), hintText: "${hintText}"),
-          onChanged: (value) {
-            userInputsList[fieldName!] = value;
-          },
-          onTap: () {},
-        ));
+      padding: const EdgeInsets.only(
+        left: 30,
+        right: 30,
+      ),
+      child: textFieldOrNot
+          ? TextField(
+              obscureText: passwordField,
+              controller: userPersonalInfoController[fieldName],
+              style: const TextStyle(fontSize: 18, fontFamily: 'Arial'),
+              decoration: InputDecoration(
+                  prefixIcon: Icon(iconData), hintText: "${hintText}"),
+              onChanged: (value) {
+                userInputsList[fieldName!] = value;
+              },
+              onTap: () {},
+            )
+          : DropdownButtonFormField<String>(
+              items: fieldName == 'preference'
+                  ? ['English', 'Bangla'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList()
+                  : [
+                      'Admin',
+                      'Hatchary Expert',
+                      'Hatchary Worker',
+                      'Hatchary Owner',
+                      'General'
+                    ].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  userInputsList[fieldName] = value!;
+                });
+              },
+              decoration: InputDecoration(
+                prefixIcon: Icon(iconData),
+                hintText: hintText,
+              ),
+            ),
+    );
   }
 
   void clearTextEditingController() {
@@ -173,308 +208,242 @@ class _LoginState extends State<Registration> {
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          child: Column(
-            children: <Widget>[
-              const SizedBox(
-                height: 50,
-              ),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 30),
-                  child: Text(
-                    'Welcome Back',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontSize: 30,
-                        color: Color.fromRGBO(2, 62, 138, 1),
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 30),
-                  child: Text(
-                    'Create an account',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color.fromRGBO(72, 202, 227, 1),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: Size(250, 250),
-                    maximumSize: Size(250, 250),
-                    backgroundColor: Color.fromRGBO(239, 239, 239, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ) // Set the background color
-                    ),
-                onPressed: () {
-                  imagePickingAlertBox();
-                },
-                child: _clickedUserPhotoUpload
-                    ? Image.file(
-                        File(_userImage!.path),
-                        fit: BoxFit.contain,
-                      )
-                    : const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.add,
-                              size: 50,
-                              weight: 900,
-                              color: Color.fromRGBO(2, 62, 138, 1),
-                            ),
-                            Text(
-                              "Add Your\nPhoto", // Use \n to break the text into 2 lines
-                              softWrap: true,
-                              textAlign:
-                                  TextAlign.center, // Center-align the text
-                              style: TextStyle(
-                                color: Color.fromRGBO(2, 62, 138, 1),
-                                fontSize: 30,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              inputWithIcon(
-                fieldName: 'full_name',
-                hintText: 'Full Name',
-                iconData: Icons.person,
-                onPressedAction: () {},
-                textFieldOrNot: true,
-                passwordField: false,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              inputWithIcon(
-                fieldName: 'email',
-                hintText: 'Email',
-                iconData: Icons.email_outlined,
-                onPressedAction: () {},
-                textFieldOrNot: true,
-                passwordField: false,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              inputWithIcon(
-                fieldName: 'phone_number',
-                hintText: 'Phone Number',
-                iconData: Icons.call_outlined,
-                onPressedAction: () {},
-                textFieldOrNot: true,
-                passwordField: false,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              inputWithIcon(
-                fieldName: 'password',
-                hintText: 'Password',
-                iconData: Icons.lock_outline,
-                onPressedAction: () {},
-                textFieldOrNot: true,
-                passwordField: true,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              inputWithIcon(
-                fieldName: 'confirm_password',
-                hintText: 'Confirm Password',
-                iconData: Icons.lock_outline,
-                onPressedAction: () {},
-                textFieldOrNot: true,
-                passwordField: true,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              inputWithIcon(
-                fieldName: 'preference',
-                hintText: 'Preference',
-                iconData: Icons.language_outlined,
-                onPressedAction: () {},
-                textFieldOrNot: false,
-                passwordField: false,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              inputWithIcon(
-                fieldName: 'role',
-                hintText: 'Role',
-                iconData: Icons.person_2_outlined,
-                onPressedAction: () {},
-                textFieldOrNot: false,
-                passwordField: false,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                padding: const EdgeInsets.only(
-                  left: 30,
-                  right: 30,
-                ),
-                margin: const EdgeInsets.only(
-                  left: 30,
-                  right: 30,
-                ),
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: <Color>[
-                      Color(0xFF0074b1),
-                      Color(0xFF0066a9),
-                      Color(0xFF024d8e),
-                      Color(0xFF02438e),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    final message = (getMessageOfRegistrationFieldsChecking(
-                        userInputList: userInputsList));
-                    if (message == 'Account created successfully.') {
-                      UserAuthenticationAndRegistration()
-                          .createAccountEmailAndPassword(
-                              userInputsList: userInputsList,
-                              password: userInputsList['password']!);
-                    }
-
-                    Navigator.pop(context);
-                    clearTextEditingController();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 30, right: 10),
-                      width: 125,
-                      child: const Divider(
-                        thickness: 1,
-                        height: 10,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const Text("Or Sign Up With"),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 10, right: 30),
-                      width: 125,
-                      child: const Divider(
-                        thickness: 1,
-                        height: 10,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 50),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: MaterialButton(
-                  onPressed: () async {
-                    bool isDone = await UserAuthenticationAndRegistration()
-                        .signUpWithGoogle();
-                    if (isDone) {
-                      clearTextEditingController();
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        "asssets/images/google_logo.png",
-                        height: 50,
-                        width: 50,
-                      ),
-                      const Text(
-                        "Google",
-                        style: (TextStyle(fontSize: 20)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
-                    "Already have an account?",
-                    style: TextStyle(color: Colors.black, fontSize: 20),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        clearTextEditingController();
-                        Navigator.pushNamed(context, Login.id);
-                      },
-                      child: const Text(
-                        "Sign In",
-                        style: TextStyle(
+          child: Stack(children: [
+            Column(
+              children: <Widget>[
+                sizedBoxH50,
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Text(
+                      'Welcome Back',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontSize: 30,
                           color: Color.fromRGBO(2, 62, 138, 1),
-                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                sizedBoxH10,
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Text(
+                      'Create an account',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color.fromRGBO(72, 202, 227, 1),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                sizedBoxH20,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size(250, 250),
+                      maximumSize: Size(250, 250),
+                      backgroundColor: Color.fromRGBO(239, 239, 239, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ) // Set the background color
+                      ),
+                  onPressed: () {
+                    imagePickingAlertBox();
+                  },
+                  child: _clickedUserPhotoUpload
+                      ? Image.file(
+                          File(_userImage!.path),
+                          fit: BoxFit.contain,
+                        )
+                      : const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.add,
+                                size: 50,
+                                weight: 900,
+                                color: Color.fromRGBO(2, 62, 138, 1),
+                              ),
+                              Text(
+                                "Add Your\nPhoto", // Use \n to break the text into 2 lines
+                                softWrap: true,
+                                textAlign:
+                                    TextAlign.center, // Center-align the text
+                                style: TextStyle(
+                                  color: Color.fromRGBO(2, 62, 138, 1),
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ))
-                ],
-              )
-            ],
-          ),
+                ),
+                sizedBoxH10,
+                inputWithIcon(
+                  fieldName: 'full_name',
+                  hintText: 'Full Name',
+                  iconData: Icons.person,
+                  onPressedAction: () {},
+                  textFieldOrNot: true,
+                  passwordField: false,
+                ),
+                sizedBoxH20,
+                inputWithIcon(
+                  fieldName: 'email',
+                  hintText: 'Email',
+                  iconData: Icons.email_outlined,
+                  onPressedAction: () {},
+                  textFieldOrNot: true,
+                  passwordField: false,
+                ),
+                sizedBoxH20,
+                inputWithIcon(
+                  fieldName: 'phone_number',
+                  hintText: 'Phone Number',
+                  iconData: Icons.call_outlined,
+                  onPressedAction: () {},
+                  textFieldOrNot: true,
+                  passwordField: false,
+                ),
+                sizedBoxH20,
+                inputWithIcon(
+                  fieldName: 'password',
+                  hintText: 'Password',
+                  iconData: Icons.lock_outline,
+                  onPressedAction: () {},
+                  textFieldOrNot: true,
+                  passwordField: true,
+                ),
+                sizedBoxH20,
+                inputWithIcon(
+                  fieldName: 'confirm_password',
+                  hintText: 'Confirm Password',
+                  iconData: Icons.lock_outline,
+                  onPressedAction: () {},
+                  textFieldOrNot: true,
+                  passwordField: true,
+                ),
+                sizedBoxH20,
+                inputWithIcon(
+                  fieldName: 'preference',
+                  hintText: 'Preference',
+                  iconData: Icons.language_outlined,
+                  onPressedAction: () {},
+                  textFieldOrNot: false,
+                  passwordField: false,
+                ),
+                sizedBoxH20,
+                inputWithIcon(
+                  fieldName: 'role',
+                  hintText: 'Role',
+                  iconData: Icons.person_2_outlined,
+                  onPressedAction: () {},
+                  textFieldOrNot: false,
+                  passwordField: false,
+                ),
+                sizedBoxH10,
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 30,
+                    right: 30,
+                  ),
+                  margin: const EdgeInsets.only(
+                    left: 30,
+                    right: 30,
+                  ),
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: <Color>[
+                        Color(0xFF0074b1),
+                        Color(0xFF0066a9),
+                        Color(0xFF024d8e),
+                        Color(0xFF02438e),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      final message = (getMessageOfRegistrationFieldsChecking(
+                          userInputList: userInputsList));
+                      if (message == 'Account created successfully.') {
+                        UserAuthenticationAndRegistration()
+                            .createAccountEmailAndPassword(
+                                userInputsList: userInputsList,
+                                password: userInputsList['password']!);
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        Navigator.pop(context);
+                        clearTextEditingController();
+                        return;
+                      }
+                      showToast(message: message);
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      "Sign Up",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text(
+                      "Already have an account?",
+                      style: TextStyle(color: Colors.black, fontSize: 20),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          clearTextEditingController();
+                          Navigator.pushNamed(context, Login.id);
+                        },
+                        child: const Text(
+                          "Sign In",
+                          style: TextStyle(
+                            color: Color.fromRGBO(2, 62, 138, 1),
+                            fontSize: 20,
+                          ),
+                        ))
+                  ],
+                )
+              ],
+            ),
+            if (_isLoading)
+              const Positioned.fill(
+                child: Center(
+                  child: SpinKitFadingCircle(
+                    color: Color.fromRGBO(2, 62, 138, 1),
+                    size: 100,
+                  ),
+                ),
+              ),
+          ]),
         ),
       ),
     );
