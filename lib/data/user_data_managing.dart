@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:aiquaboost/domain/userFisheriesData.dart';
 import 'package:aiquaboost/domain/user_academic_data.dart';
 import 'package:aiquaboost/domain/user_address_data.dart';
 import 'package:aiquaboost/domain/user_experience_data.dart';
@@ -165,6 +166,32 @@ class UserDataUploading {
       firestoreOk = false;
     }
 
+    if (firestoreOk && firebaseOk) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> setFisheriesInfo(
+    UserFisheriesData userFisheriesData,
+  ) async {
+    bool firebaseOk = false;
+    bool firestoreOk = false;
+
+    //address adding
+    try {
+      await _database
+          .child(
+              'users/fisheries/${userFisheriesData.userID}/${'FS' + userFisheriesData.fisheriesID}')
+          .set({
+        'userID': userFisheriesData.userID,
+        'fisheriesID': 'FS' + userFisheriesData.fisheriesID,
+        'fisheries_species': userFisheriesData.fisheries,
+      });
+      firestoreOk = true;
+    } on FirebaseException catch (e) {
+      firestoreOk = false;
+    }
     if (firestoreOk && firebaseOk) {
       return true;
     }
