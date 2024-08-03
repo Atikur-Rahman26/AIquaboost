@@ -1,11 +1,14 @@
 import 'package:aiquaboost/constants.dart';
 import 'package:aiquaboost/data/user_authentication.dart';
+import 'package:aiquaboost/main.dart';
 import 'package:aiquaboost/screens/components/users_logistics.dart';
 import 'package:aiquaboost/screens/home%20_screen/home_screen.dart';
+import 'package:aiquaboost/screens/user_profile.dart';
 import 'package:aiquaboost/screens/user_registration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   static const id = "login";
@@ -246,6 +249,19 @@ class _LoginState extends State<Login> {
                         setState(() {
                           _isLoading = false;
                         });
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        await prefs?.setStringList(MyApp.userKey, <String>[
+                          '${Profile.userInfoData!.email}',
+                          '${Profile.userInfoData!.full_name}',
+                          '${Profile.userInfoData!.phone_number}',
+                          '${Profile.userInfoData!.user_profile_photo}',
+                          '${Profile.userInfoData!.preference}',
+                          '${Profile.userInfoData!.role}',
+                          '${Profile.userInfoData!.age}',
+                          '${Profile.userInfoData!.userID}',
+                        ]);
+                        await prefs?.setBool(MyApp.loginKey, true);
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           HomeScreen.id,

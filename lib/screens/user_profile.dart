@@ -3,6 +3,7 @@ import 'package:aiquaboost/domain/user_info_data.dart';
 import 'package:aiquaboost/main.dart';
 import 'package:aiquaboost/screens/update_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -12,6 +13,7 @@ class Profile extends StatefulWidget {
   static List<Map<String, String>>? userAddressData;
   static List<Map<String, String>>? userAcademicData;
   static List<Map<String, String>>? userExperienceData;
+  static List<Map<String, String>>? userFisheriesData;
   const Profile({super.key});
 
   @override
@@ -73,12 +75,6 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    print("email: ${Profile.userInfoData!.email}");
-    print("id: ${Profile.userInfoData!.userID}");
-    print("preference: ${Profile.userInfoData!.preference}");
-    print("role : ${Profile.userInfoData!.role}");
-    print("age: ${Profile.userInfoData!.age}");
-    print("full name: ${Profile.userInfoData!.full_name}");
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -104,15 +100,17 @@ class _ProfileState extends State<Profile> {
           ),
           actions: [
             IconButton(
-              onPressed: () {
+              onPressed: () async {
                 UserAuthenticationAndRegistration().signOutUser();
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs?.setBool(MyApp.loginKey, false);
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   MyHomePage.id,
                   (Route<dynamic> route) => false,
                 );
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout_outlined,
                 size: 30,
                 color: Colors.white,

@@ -53,6 +53,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
     'division': TextEditingController(),
   };
 
+  Map<String, TextEditingController> fisheriesController = {
+    'fisheries_species': TextEditingController()
+  };
+
   var userInputsList = {
     'full_name': '',
     'email': '',
@@ -74,11 +78,15 @@ class _UpdateProfileState extends State<UpdateProfile> {
   Map<String, dynamic> addressMap = {};
   Map<String, dynamic> academicMap = {};
   Map<String, dynamic> experienceMap = {};
+  Map<String, dynamic> fisheriesSpeciesMap = {};
   List<Map<String, String>> userAddressLists = [];
 
   List<Map<String, String>> userAcademicLists = [];
 
   List<Map<String, String>> userExperienceLists = [];
+
+  List<Map<String, String>> userFisheriesSpecies = [];
+
   String preferenceValue = '';
   String roleValue = '';
   @override
@@ -291,6 +299,75 @@ class _UpdateProfileState extends State<UpdateProfile> {
     }
   }
 
+  Widget FisheriesWidget({
+    required int fisheriesNumber,
+    required String fisheries,
+  }) {
+    return Row(
+      children: <Widget>[
+        sizedBoxH10,
+        const SizedBox(
+          width: 30,
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Fisheries Species:  ",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: kPrimaryBlueColor,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      "${fisheries}",
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                      style: TextStyle(
+                        fontSize: 19,
+                        color: kPrimaryBlueColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                width: 150,
+                height: 3,
+                color: kPrimaryBlueColor,
+              ),
+              sizedBoxH20,
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> fisheriesWidgetList = [];
+  Widget FisheriesSpeciesWidget({required List fisheriesList}) {
+    fisheriesWidgetList.clear();
+    if (fisheriesList.length == 0) {
+      return Column();
+    } else {
+      print("update profile: ${fisheriesList}");
+      for (int i = 0; i < fisheriesList.length; i++) {
+        print(fisheriesList[i]['fisheries_species']);
+        fisheriesWidgetList.add(FisheriesWidget(
+            fisheriesNumber: i,
+            fisheries: fisheriesList[i]['fisheries_species']));
+      }
+      return Column(
+        children: fisheriesWidgetList,
+      );
+    }
+  }
+
   Widget academicWidget({
     required int academicNumber,
     required String institute,
@@ -414,6 +491,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     if (academicLists.length == 0) {
       return Column();
     } else {
+      print("update profile: ${academicLists}");
       for (int i = 0; i < academicLists.length; i++) {
         print(academicLists[i]['institute']);
         academicWidgetList.add(
@@ -599,7 +677,11 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }
 
   void clearTextEditingController(
-      {int? personal, int? address, int? academic, int? experience}) {
+      {int? personal,
+      int? address,
+      int? academic,
+      int? experience,
+      required fisheries}) {
     if (personal == 1) {
       userPersonalInfoController['full_name']!.clear();
       userPersonalInfoController['email']!.clear();
@@ -627,6 +709,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
       experienceController['location']!.clear();
       experienceController['joining_date']!.clear();
       experienceController['last_date_of_this_office']!.clear();
+    }
+
+    if (fisheries == 1) {
+      fisheriesController['fisheries_species']!.clear();
     }
   }
 
@@ -694,6 +780,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
       controller = experienceController[fieldName]!;
     } else if (AddressOrExpOrAcademic == 'AC') {
       controller = academicController[fieldName]!;
+    } else if (AddressOrExpOrAcademic == 'FS') {
+      controller = fisheriesController[fieldName]!;
     }
 
     return Padding(
@@ -710,11 +798,13 @@ class _UpdateProfileState extends State<UpdateProfile> {
           if (AddressOrExpOrAcademic == 'person') {
             userInputsList[fieldName] = value;
           } else if (AddressOrExpOrAcademic == 'AD') {
-            userInputsList[fieldName] = value;
+            addressMap[fieldName] = value;
           } else if (AddressOrExpOrAcademic == 'EX') {
-            userInputsList[fieldName] = value;
+            experienceMap[fieldName] = value;
           } else if (AddressOrExpOrAcademic == 'AC') {
-            userInputsList[fieldName] = value;
+            academicMap[fieldName] = value;
+          } else if (AddressOrExpOrAcademic == 'FS') {
+            fisheriesSpeciesMap[fieldName] = value;
           }
         },
         onTap: () {},
@@ -929,6 +1019,118 @@ class _UpdateProfileState extends State<UpdateProfile> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           sizedBoxH30,
+                          FisheriesSpeciesWidget(
+                              fisheriesList: userFisheriesSpecies),
+                          inputWithIcon(
+                            hintText: 'Fisheries Species',
+                            iconData: Icons.add,
+                            onPressedAction: () {},
+                            fieldName: 'fisheries_species',
+                            textFieldOrNot: true,
+                            AddressOrExpOrAcademic: 'FS',
+                          ),
+                          sizedBoxH20,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              MaterialButton(
+                                onPressed: () {
+                                  fisheriesSpeciesMap.clear();
+                                  clearTextEditingController(
+                                      personal: 0,
+                                      address: 0,
+                                      academic: 0,
+                                      experience: 0,
+                                      fisheries: 1);
+                                },
+                                child: const Column(
+                                  children: [
+                                    Text(
+                                      "Discard",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.red),
+                                    ),
+                                    Icon(
+                                      Icons.cancel_outlined,
+                                      size: 30,
+                                      color: Colors.red,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 30,
+                              ),
+                              MaterialButton(
+                                onPressed: () {
+                                  Map<String, String> copiedAcademic =
+                                      Map.from(fisheriesSpeciesMap);
+                                  // Add the copied map to the userExperienceLists
+                                  setState(() {
+                                    userFisheriesSpecies.add(copiedAcademic);
+                                  });
+                                  fisheriesSpeciesMap.clear();
+                                  print(
+                                      "user fisheries List: ${userFisheriesSpecies}");
+                                  clearTextEditingController(
+                                      personal: 0,
+                                      address: 0,
+                                      academic: 0,
+                                      experience: 0,
+                                      fisheries: 1);
+                                },
+                                child: const Column(
+                                  children: [
+                                    Text(
+                                      "Save",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.green),
+                                    ),
+                                    Icon(
+                                      Icons.check,
+                                      size: 30,
+                                      color: Colors.green,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 50,
+                      top: 12,
+                      child: Container(
+                        padding:
+                            EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                        color: Colors.white,
+                        child: const Text(
+                          'Fisheries Species',
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                sizedBoxH10,
+                Stack(
+                  children: <Widget>[
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      padding: EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Color.fromARGB(255, 51, 204, 255), width: 1),
+                        borderRadius: BorderRadius.circular(5),
+                        shape: BoxShape.rectangle,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          sizedBoxH30,
                           academicComponent(academicLists: userAcademicLists),
                           inputWithIcon(
                             hintText: 'Institute',
@@ -969,12 +1171,12 @@ class _UpdateProfileState extends State<UpdateProfile> {
                               MaterialButton(
                                 onPressed: () {
                                   academicMap.clear();
-
                                   clearTextEditingController(
                                       personal: 0,
                                       address: 0,
                                       academic: 1,
-                                      experience: 0);
+                                      experience: 0,
+                                      fisheries: 0);
                                 },
                                 child: const Column(
                                   children: [
@@ -1003,12 +1205,14 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                     userAcademicLists.add(copiedAcademic);
                                   });
                                   academicMap.clear();
-
+                                  print(
+                                      "user Academic List: ${userAcademicLists}");
                                   clearTextEditingController(
                                       personal: 0,
                                       address: 0,
                                       academic: 1,
-                                      experience: 0);
+                                      experience: 0,
+                                      fisheries: 0);
                                 },
                                 child: const Column(
                                   children: [
@@ -1115,7 +1319,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       personal: 0,
                                       address: 0,
                                       academic: 0,
-                                      experience: 1);
+                                      experience: 1,
+                                      fisheries: 0);
                                 },
                                 child: const Column(
                                   children: [
@@ -1148,7 +1353,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       personal: 0,
                                       address: 0,
                                       academic: 0,
-                                      experience: 1);
+                                      experience: 1,
+                                      fisheries: 0);
                                 },
                                 child: const Column(
                                   children: [
@@ -1264,7 +1470,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       personal: 0,
                                       address: 1,
                                       academic: 0,
-                                      experience: 0);
+                                      experience: 0,
+                                      fisheries: 0);
                                 },
                                 child: const Column(
                                   children: [
@@ -1297,7 +1504,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       personal: 0,
                                       address: 1,
                                       academic: 0,
-                                      experience: 0);
+                                      experience: 0,
+                                      fisheries: 0);
                                 },
                                 child: const Column(
                                   children: [
@@ -1382,10 +1590,12 @@ class _UpdateProfileState extends State<UpdateProfile> {
                           ),
                           isUploadedImage);
                       bool Done = await usersDataProcessing(
-                          userAcademicLists: userAcademicLists,
-                          userAddressLists: userAddressLists,
-                          userExperienceLists: userExperienceLists);
-
+                        userAcademicLists: userAcademicLists,
+                        userAddressLists: userAddressLists,
+                        userExperienceLists: userExperienceLists,
+                        userFisheriesLists: userFisheriesSpecies,
+                      );
+                      print(Done);
                       if (Done) {
                         setState(() {
                           _isLoading = false;
@@ -1396,7 +1606,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                               personal: 1,
                               address: 1,
                               academic: 1,
-                              experience: 1);
+                              experience: 1,
+                              fisheries: 1);
                           showToast(message: 'Updated');
                           Navigator.pushNamedAndRemoveUntil(
                             context,

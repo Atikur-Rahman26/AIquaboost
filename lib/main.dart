@@ -1,3 +1,4 @@
+import 'package:aiquaboost/domain/user_info_data.dart';
 import 'package:aiquaboost/firebase_options.dart';
 import 'package:aiquaboost/screens/home%20_screen/home_screen.dart';
 import 'package:aiquaboost/screens/notification_screen/Notification.dart';
@@ -9,17 +10,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  static const String loginKey = "LoggedIn";
+  static const String userKey = "Users";
+  late SharedPreferences preferences;
+
+  Future<bool> loggedIn() async {
+    preferences = await SharedPreferences.getInstance();
+    bool? temp = preferences.getBool(loginKey);
+    return temp ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +41,46 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: FutureBuilder<bool>(
+        future: loggedIn(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData && snapshot.data == true) {
+            List<String>? strlists = preferences.getStringList(userKey);
+            if (strlists != null && strlists.length >= 8) {
+              String email = strlists[0];
+              String full_name = strlists[1];
+              String phone_number = strlists[2];
+              String user_profile_photo = strlists[3];
+              String preference = strlists[4];
+              String role = strlists[5];
+              String age = strlists[6];
+              String userID = strlists[7];
+
+              UserInfoData userInfo = UserInfoData(
+                userID: userID,
+                full_name: full_name,
+                email: email,
+                phone_number: phone_number,
+                preference: preference,
+                role: role,
+                age: age,
+                user_profile_photo: user_profile_photo,
+              );
+
+              Profile.userInfoData = userInfo;
+              return HomeScreen();
+            } else {
+              return MyHomePage(); // Fallback to home page if user data is incomplete
+            }
+          } else {
+            return MyHomePage();
+          }
+        },
+      ),
       routes: {
         Login.id: (context) => Login(),
         Registration.id: (context) => Registration(),
@@ -53,6 +103,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   Future<void> signOutUser() async {
     // Sign out from Firebase
     await FirebaseAuth.instance.signOut();
@@ -61,11 +113,14 @@ class _MyHomePageState extends State<MyHomePage> {
     await GoogleSignIn().signOut();
   }
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  @override
+  void initState() {
+    super.initState();
+    signOutUser();
+  }
 
   @override
   Widget build(BuildContext context) {
-    signOutUser();
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -126,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

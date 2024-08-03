@@ -1,6 +1,7 @@
 import 'package:aiquaboost/data/user_authentication.dart';
 import 'package:aiquaboost/data/user_data_managing.dart';
 import 'package:aiquaboost/data/user_data_processing.dart';
+import 'package:aiquaboost/domain/userFisheriesData.dart';
 import 'package:aiquaboost/domain/user_academic_data.dart';
 import 'package:aiquaboost/domain/user_address_data.dart';
 import 'package:aiquaboost/domain/user_experience_data.dart';
@@ -101,6 +102,8 @@ Future<bool> setUsersInfo() async {
         await userDataProcessing.getUserExperienceInfo(userID: userID);
     Profile.userAcademicData =
         await userDataProcessing.getUserAcademicInfo(userID: userID);
+    Profile.userFisheriesData =
+        await userDataProcessing.getFisheriesInfo(userID: userID);
     print("Updated");
     return true;
   } catch (e) {
@@ -172,6 +175,7 @@ Future<bool> usersDataProcessing({
   required List<Map<String, String>> userAcademicLists,
   required List<Map<String, String>> userExperienceLists,
   required List<Map<String, String>> userAddressLists,
+  required List<Map<String, String>> userFisheriesLists,
 }) async {
   try {
     if (userAcademicLists.isNotEmpty) {
@@ -220,9 +224,21 @@ Future<bool> usersDataProcessing({
         await UserDataUploading().uploadUserAddress(userAddressData);
       }
     }
+
+    if (userFisheriesLists.isNotEmpty) {
+      for (int i = 0; i < userFisheriesLists.length; i++) {
+        UserFisheriesData userFisheriesData = UserFisheriesData(
+          userID: Profile.userInfoData!.userID,
+          fisheriesID: '${i}',
+          fisheries: userFisheriesLists[i]['fisheries_species']!,
+        );
+
+        await UserDataUploading().setFisheriesInfo(userFisheriesData);
+      }
+    }
     return true;
   } catch (e) {
-    print("error: ${e}");
+    print("error has come::::: ${e}");
     return false;
   }
 }

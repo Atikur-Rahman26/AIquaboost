@@ -1,4 +1,5 @@
 import 'package:aiquaboost/constants.dart';
+import 'package:aiquaboost/data/user_data_processing.dart';
 import 'package:aiquaboost/screens/chatting_screen/chat.dart';
 import 'package:aiquaboost/screens/devices_screen/devices.dart';
 import 'package:aiquaboost/screens/home%20_screen/home.dart';
@@ -62,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Home screen: ${UserDataProcessing().getUserID()}");
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

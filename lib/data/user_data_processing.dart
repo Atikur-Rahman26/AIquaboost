@@ -94,6 +94,27 @@ class UserDataProcessing {
     return academics;
   }
 
+  Future<List<Map<String, String>>> getFisheriesInfo(
+      {required String userID}) async {
+    List<Map<String, String>> fisheries = [];
+
+    try {
+      DatabaseReference ref = _database.child('users/fisheries/$userID');
+      DataSnapshot snapshot = await ref.get();
+
+      if (snapshot.exists) {
+        Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
+        values.forEach((key, value) {
+          fisheries.add(Map<String, String>.from(value));
+        });
+      }
+    } on FirebaseException catch (e) {
+      print('Error getting addresses from Realtime Database: $e');
+    }
+
+    return fisheries;
+  }
+
   Future<List<Map<String, String>>> getUserExperienceInfo(
       {required String userID}) async {
     List<Map<String, String>> experiences = [];
